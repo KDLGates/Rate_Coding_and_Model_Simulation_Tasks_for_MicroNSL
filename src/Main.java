@@ -12,11 +12,13 @@ public class Main {
 
 
         long T = 0;
-        // As A is the rate of decay, A will need to be improvised for now.
+        // A is the rate of exponential decay (the 'leak' of the leaky integrator).
         // TODO: What is a good value for A? Why?
         // float A = Float.valueOf("5E-5");
         float A = 0.25f;
         System.out.println("Rate of Decay is: " + A);
+
+        // K is some allowable constant input term.
         // TODO: What is a good value for K? Why?
         // float K = ThreadLocalRandom.current().nextFloat();
         float K = 2.0F;
