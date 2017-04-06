@@ -10,16 +10,16 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Create leaky
+
         long T = 0;
         // As A is the rate of decay, A will need to be improvised for now.
         // TODO: What is a good value for A? Why?
         // float A = Float.valueOf("5E-5");
-        float A = 2.0f;
+        float A = 0.75f;
         System.out.println("Rate of Decay is: " + A);
         // TODO: What is a good value for K? Why?
         // float K = ThreadLocalRandom.current().nextFloat();
-        float K = 1.5F;
+        float K = 2.0F;
 
         Leaky leakyIntegrator = new Leaky(A,K,T);
         ArrayList<Float> potentialsByTime = new ArrayList<Float>();
@@ -110,8 +110,8 @@ public class Main {
         int width = screenSize.width * 1 / 2;
 
         Plot2DPanel plot = new Plot2DPanel();
-        plot.addLinePlot("Membrane Potentials by Time", timeIntegers, potentialDoubles);
-        JFrame frame = new JFrame("Membrane Potentials by Time");
+        plot.addLinePlot("Membrane Potential by Time", timeIntegers, potentialDoubles);
+        JFrame frame = new JFrame("Membrane Potential by Time");
         frame.setSize(width, height);
         frame.setContentPane(plot);
         frame.setVisible(true);

@@ -10,12 +10,18 @@ public class Leaky {
     float NextV(float C, long newT) {
         // nextVoltage = (float) (K * Math.exp(-A * (newT - time)) + C) + nextVoltage;
 
+        // The critical block which calculates the result.
+        // If we have a "true" zero start time (initial time of initializer and time is zero), zero out voltages...
         if (newT == 0 && time == newT) {
             nextVoltage = 0;
             prevVoltage = 0;
         } else {
+            // Else, apply the closed form solution to the leaky integrator equation (per Wikipedia)
             nextVoltage = (float) (K * Math.exp(-A * time) + C) + prevVoltage;
-            prevVoltage = (float) (time + C);
+
+            // Options for prevVoltage (the "+x_0(t)" term on Wikipedia):
+            // Option #1: The previous solution
+            prevVoltage = (float) (K * Math.exp(-A * time) + C);
         }
 
         /*
@@ -29,7 +35,7 @@ public class Leaky {
         */
 
         System.out.println("Debug: At time " + newT + ", (" + K + " * e^(-" + A + " * (" + newT + " - " + time + ") + " + C + ") is: " + (K * Math.exp(-A * (newT - time)) + C));
-        // time = newT;
+        time = newT;
         return prevVoltage;
     }
 
