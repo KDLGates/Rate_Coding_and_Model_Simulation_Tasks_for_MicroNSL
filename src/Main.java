@@ -15,7 +15,7 @@ public class Main {
         // As A is the rate of decay, A will need to be improvised for now.
         // TODO: What is a good value for A? Why?
         // float A = Float.valueOf("5E-5");
-        float A = 0.75f;
+        float A = 0.25f;
         System.out.println("Rate of Decay is: " + A);
         // TODO: What is a good value for K? Why?
         // float K = ThreadLocalRandom.current().nextFloat();
@@ -27,11 +27,13 @@ public class Main {
 
         // for 1 - 5 nextV (constant C)
         // TODO: What is a good value for C? Why?
-        float C = 5.0f;
+        float C = 2.0f;
         float baseC = C;
         System.out.println("Initial Constant Input is: " + C);
-        System.out.println("At time 0, the initial voltage is: " + leakyIntegrator.NextV( 0f, T));
-        for (; T <= 5; ++T) {
+        // System.out.println("At time 0, the initial voltage is: " + leakyIntegrator.NextV( 0f, T));
+
+
+        for (; T <= 50; ++T) {
             potentialsByTime.add(leakyIntegrator.NextV(C, T));
             System.out.println("Voltage at time " +  T + ": " + potentialsByTime.get((int) T));
         }
@@ -39,7 +41,7 @@ public class Main {
         // For 6-20 nextV (c=0)
         C = 0;
         System.out.println("At this point, input has ceased (C=0).");
-        for (; T <= 20; ++T) {
+        for (; T <= 100; ++T) {
             potentialsByTime.add(leakyIntegrator.NextV(C, T));
             System.out.println("Voltage at time " + T +": " + potentialsByTime.get((int) T));
         }
