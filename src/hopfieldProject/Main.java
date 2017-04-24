@@ -15,7 +15,6 @@ import org.math.plot.*;
 public class Main {
 
     public static void main(String[] args) {
-
         // A 10x5 array where 1 represents a filled cell, and 0 represents an empty one.
         // This array represents a 'correct' letter A.
         int[][] A_Array = new int[][] {
@@ -36,6 +35,9 @@ public class Main {
                 { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 }
         };
 
+        // This network is dual coordinates: think of i,j as the 2D coordinates of the
+        // nodes, and j,k as the corresponding 2D coordinates of the cells in the input arrays.
+
         // Initialise the Hopfield Graph that'll track the nodes and edges.
         // The edges will be a 2D coordinate grid of k and l that'll correspond to the coordinates of the input array.
         HopfieldGraph graph = new HopfieldGraph();
@@ -49,12 +51,18 @@ public class Main {
                 // The state corresponds to whether that neuron's cell is filled (1) or empty (0).
                 // This is the initial training for the nodes to memorize the 'correct' letter A.
                 nodes[i][j] = new HopfieldNode(i,j, A_Array[i][j]);
-                // Only for this first version, rather than a fully connected network, we'll
-                // try only adding connections between adjacent nodes (i.e., to neighbors up, down, left & right).
-                graph.addEdge(i, j, i+1, j, nodes[i][j].state);
-                graph.addEdge(i, j, i, j+1, nodes[i][j].state);
-                graph.addEdge(i, j, i-1, j, nodes[i][j].state);
-                graph.addEdge(i, j, i, j-1, nodes[i][j].state);
+            }
+        }
+
+        // Populate the network with edges (across the i,j coordinates) until it is fully connected.
+        for (int i = 0; i < nodes.length; ++i) {
+            for (int j = 0; j < nodes[i].length; ++j) {
+                if (i == nodes[i][j].i && j == nodes[i][j].j) {
+                    continue;
+                }
+                else {
+                    graph.addEdge(nodes[i][j].k, nodes[i][j].l, i, j, nodes[i][j].state);
+                }
             }
         }
 
