@@ -1,3 +1,5 @@
+package hopfieldProject;
+
 import java.lang.Math;
 
 public class Leaky {
@@ -45,6 +47,14 @@ public class Leaky {
         System.out.println("Debug: At time " + newT + ", (" + K + " * e^(-" + A + " * (" + newT + ") + " + C + ") is: " + (K * Math.exp(-A * (newT)) + C));
         time = newT;
         return nextVoltage;
+    }
+
+    public Leaky() {
+        this.time = 0;
+        this.A = 0.25f;
+        this.K = 2.0f;
+        this.nextVoltage = 0;
+        this.prevVoltage = 0;
     }
 
     public Leaky(float A, float K, long T) {

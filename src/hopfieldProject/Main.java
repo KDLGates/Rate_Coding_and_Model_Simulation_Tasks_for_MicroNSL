@@ -1,17 +1,85 @@
+package hopfieldProject;
+
+import hopfieldProject.HopfieldNode;
+import hopfieldProject.HopfieldGraph;
+import hopfieldProject.Leaky;
+
+import java.lang.Math;
+
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.JFrame;
-import java.util.stream.IntStream;
+
 import org.math.plot.*;
-import org.apache.commons.lang3.ArrayUtils;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        // A 10x5 array where 1 represents a filled cell, and 0 represents an empty one.
+        // This array represents a 'correct' letter A.
+        int[][] A_Array = new int[][] {
+                { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 },
+                { 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 }
+        };
 
+        // A 10x5 array where 1 represents a filled cell, and 0 represents an empty one.
+        // This array represents a 'corrupted' letter A (it's missing the horizontal line).
+        int[][] Corrupted_A_Array = new int[][] {
+                { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 }
+        };
+
+        // Initialise the Hopfield Graph that'll track the nodes and edges.
+        // The edges will be a 2D coordinate grid of k and l that'll correspond to the coordinates of the input array.
+        HopfieldGraph graph = new HopfieldGraph();
+
+        // Initialise the Hopfield Nodes that'll correspond to our evaluation of the input array.
+        // They're a 2D coordinate grid of i and j, but they'll be double indexed afterward.
+        HopfieldNode[][] nodes = new HopfieldNode[5][10];
+        for (int i = 0; i < nodes.length; ++i) {
+            for (int j = 0; j < nodes[i].length; ++j) {
+                // We translate the input array into the initial neuron state (mf_(kl) in the book).
+                // The state corresponds to whether that neuron's cell is filled (1) or empty (0).
+                // This is the initial training for the nodes to memorize the 'correct' letter A.
+                nodes[i][j] = new HopfieldNode(i,j, A_Array[i][j]);
+                // Only for this first version, rather than a fully connected network, we'll
+                // try only adding connections between adjacent nodes (i.e., to neighbors up, down, left & right).
+                graph.addEdge(i, j, i+1, j, nodes[i][j].state);
+                graph.addEdge(i, j, i, j+1, nodes[i][j].state);
+                graph.addEdge(i, j, i-1, j, nodes[i][j].state);
+                graph.addEdge(i, j, i, j-1, nodes[i][j].state);
+            }
+        }
+
+
+        // T is our time coordinate, and it will be re-used across both the Hopfield and Leaky demos.
         long T = 0;
+
+        // C is our initial constant voltage to start off the leaky integrators.
+        // TODO: What is a good initial value for C? Why?
+        float C = 1.0f;
+        float baseC = C;
+
+        // For 75 time units, we calculate the next voltages for all 50 of the leaky Hopfield nodes.
+        // This will be used for the threshhold.
+        for (; T <= 75; ++T) {
+            for (int i = 0; i < nodes.length; ++i) {
+                for (int j = 0; j < nodes[i].length; ++j) {
+                    nodes[i][j].NextV(C, T);
+                }
+            }
+        }
+
+        // Reset time to 0 for the Leaky demo.
+        T = 0;
+
         // A is the rate of exponential decay (the 'leak' of the leaky integrator).
         // TODO: What is a good value for A? Why?
         // float A = Float.valueOf("5E-5");
@@ -28,14 +96,12 @@ public class Main {
 
 
         // for 1 - 5 nextV (constant C)
-        // TODO: What is a good value for C? Why?
-        float C = 2.0f;
-        float baseC = C;
+        C = 1.0f;
         System.out.println("Initial Constant Input is: " + C);
         // System.out.println("At time 0, the initial voltage is: " + leakyIntegrator.NextV( 0f, T));
 
 
-        for (; T <= 50; ++T) {
+        for (; T <= 75; ++T) {
             potentialsByTime.add(leakyIntegrator.NextV(C, T));
             System.out.println("Voltage at time " +  T + ": " + potentialsByTime.get((int) T));
         }
@@ -51,7 +117,7 @@ public class Main {
         /*
 
         T = 0;
-        Leaky leakyIntegrator2 = new Leaky(A,potentialsByTime.get(11).longValue(),T);
+        hopfieldProject.Leaky leakyIntegrator2 = new hopfieldProject.Leaky(A,potentialsByTime.get(11).longValue(),T);
         ArrayList<Float> potentialsByTime2 = new ArrayList<Float>();
         // for 1 - 5 nextV (constant C)
         // TODO: What is a good value for C? Why?
@@ -72,7 +138,7 @@ public class Main {
         }
 
         T = 0;
-        Leaky leakyIntegrator3 = new Leaky(A,potentialsByTime2.get(11).longValue(),T);
+        hopfieldProject.Leaky leakyIntegrator3 = new hopfieldProject.Leaky(A,potentialsByTime2.get(11).longValue(),T);
         ArrayList<Float> potentialsByTime3 = new ArrayList<Float>();
         // for 1 - 5 nextV (constant C)
         // TODO: What is a good value for C? Why?
